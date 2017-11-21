@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "356538484232",
+    "firebase_url": "https://locationservice-601a6.firebaseio.com",
+    "project_id": "locationservice-601a6",
+    "storage_bucket": "locationservice-601a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356538484232:android:9c9c20c1d636a51f",
+        "android_client_info": {
+          "package_name": "pl.kotliners.locationservice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356538484232-ihnubma1b5q3f8p0192ia5f808f0ri0j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.kotliners.locationservice",
+            "certificate_hash": "f4cfe39193d2971fd286ff594688fe71b7c29976"
+          }
+        },
+        {
+          "client_id": "356538484232-f05k9mbdr70ie1rnufnvln9bcug8pfjd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2xuLwNhyuG5Hk3GrimtOxFpLDNHLZM4I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "356538484232-f05k9mbdr70ie1rnufnvln9bcug8pfjd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

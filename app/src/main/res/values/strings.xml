@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Where was I</string>
+    <string name="change_sheduled_time">Change scheduled time</string>
+    <string name="get_pattern">Get polyline on map</string>
+    <string name="location_service">Location Service</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
