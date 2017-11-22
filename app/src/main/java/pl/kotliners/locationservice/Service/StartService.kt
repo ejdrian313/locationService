@@ -18,25 +18,28 @@ class StartService : BroadcastReceiver() {
     var alarmManager:AlarmManager? = null
     lateinit var myIntent: Intent
     lateinit var pendingIntent: PendingIntent
+    val HALF_HOUR = 30
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
         if (intent!!.action == "android.intent.action.BOOT_COMPLETED") {
-           start(context!!)
+           start(context!!, HALF_HOUR)
         }
     }
 
-    fun start(context: Context) {
+    fun start(context: Context, interval: Int) {
         alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         myIntent = Intent(context, LocationService::class.java)
         pendingIntent = PendingIntent.getService(context, 0, myIntent, 0)
-        val period = Utils.minutesToMiliSeconds(1)
+        val period = Utils.minutesToMiliSeconds(interval)
 
-        alarmManager!!.set(AlarmManager.ELAPSED_REALTIME,  SystemClock.elapsedRealtime() , pendingIntent)
         alarmManager!!.setRepeating(AlarmManager.ELAPSED_REALTIME,  SystemClock.elapsedRealtime() , period, pendingIntent)
     }
 
     fun stop(context: Context) {
-        alarmManager?.cancel(pendingIntent)
+        alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        myIntent = Intent(context, LocationService::class.java)
+        pendingIntent = PendingIntent.getService(context, 0, myIntent, 0)
+        alarmManager!!.cancel(pendingIntent)
     }
 }

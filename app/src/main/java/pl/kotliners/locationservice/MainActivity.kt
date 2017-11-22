@@ -15,9 +15,9 @@ import android.widget.Toast
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
+import kotlinx.android.synthetic.main.activity_main.*
 import pl.kotliners.locationservice.Service.LocationService
 import pl.kotliners.locationservice.Service.StartService
-import pl.kotliners.locationservice.Util.Utils
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,31 +28,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tokenSaved: String
     private lateinit var myIntent: Intent
     private lateinit var pendingIntent:PendingIntent
-    //private lateinit var alarmManager:AlarmManager
-
     private lateinit var alarmService:StartService
 
     private val accessLocation = 1
-    private val calendar = java.util.Calendar.getInstance()
-
+    val ten_minutes = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         FirebaseApp.initializeApp(applicationContext)
-        pref = PreferenceManager.getDefaultSharedPreferences(this)
-        editor = pref.edit()
-        mAuth = FirebaseAuth.getInstance()
-        myIntent = Intent(this, LocationService::class.java)
-        //alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmService = StartService()
+        initApp()
         checkUserLogIn()
         checkPermission()
         alarmSet()
-    }
-
-    private fun alarmSet() {
-        pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent, 0)
     }
 
     override fun onStart() {
@@ -62,18 +50,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            accessLocation -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    onAccessLocation = true
-                } else {
-                    onAccessLocation = false
-                    Toast.makeText(this, "We cannot access to your location", Toast.LENGTH_LONG).show()
-                }
+    fun buChangeSheduledTime(view: View) {
+        alarmService.stop(applicationContext)
+        var interval = getMinutes()
+        alarmService.start(applicationContext, interval)
+    }
+
+    private fun getMinutes(): Int{
+        var min = ten_minutes
+        if( etMinutesLand == null ){
+            try {
+                min = etMinutes?.text.toString().toInt()
+            } catch (e: Exception) {
+                etMinutes?.error = "Set valid value between 1 minute to 1440 minutes (24h)"
+            } finally {
+                Toast.makeText(this, "Interval changed", Toast.LENGTH_LONG).show()
+                etMinutes?.clearComposingText()
+            }
+        } else {
+            try {
+                min = etMinutesLand?.text.toString().toInt()
+            } catch (e: Exception) {
+                etMinutes?.error = "Set valid value between 1 minute to 1440 minutes (24h)"
+            } finally {
+                Toast.makeText(this, "Interval changed", Toast.LENGTH_LONG).show()
+                etMinutesLand?.clearComposingText()
             }
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        return min
     }
 
     fun buStartLocation(view: View) {
@@ -89,9 +93,17 @@ class MainActivity : AppCompatActivity() {
         alarmService.stop(applicationContext)
     }
 
-    fun getPattern(view: View) {
+    fun getPatternOnMap(view: View) {
         val intent = Intent(this, MapsActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun initApp() {
+        pref = PreferenceManager.getDefaultSharedPreferences(this)
+        editor = pref.edit()
+        mAuth = FirebaseAuth.getInstance()
+        myIntent = Intent(this, LocationService::class.java)
+        alarmService = StartService()
     }
 
     private fun checkUserLogIn() {
@@ -121,10 +133,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun startLocation() {
         LocationService.isServiceRunning = true
-        val period = Utils.minutesToMiliSeconds(1)
-        alarmService.start(applicationContext)
-        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, calendar.timeInMillis, period, pendingIntent)
-       // Log.i("ALARM MANAGER", alarmManager.toString())
+        alarmService.start(applicationContext, ten_minutes)
+    }
+
+    private fun alarmSet() {
+        pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent, 0)
     }
 
     private fun checkPermission() {
@@ -138,5 +151,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
         onAccessLocation = true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            accessLocation -> {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onAccessLocation = true
+                } else {
+                    onAccessLocation = false
+                    Toast.makeText(this, "We cannot access to your location", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

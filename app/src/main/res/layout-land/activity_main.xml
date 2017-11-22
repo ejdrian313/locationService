@@ -4,48 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_main"
     tools:context="pl.kotliners.locationservice.MainActivity">
 
-    <NumberPicker
-        android:id="@+id/numberPicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="8dp"
-        android:solidColor="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.496" />
 
     <Button
+        android:background="@drawable/background"
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="96dp"
-        android:layout_marginStart="72dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/change_sheduled_time"
         app:layout_constraintBottom_toTopOf="@+id/buGetPolylineOnMap"
-        app:layout_constraintStart_toEndOf="@+id/numberPicker"
+        app:layout_constraintStart_toEndOf="@+id/etMinutesLand"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
+        android:background="@drawable/background"
         android:id="@+id/buGetPolylineOnMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="80dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="84dp"
+        android:layout_marginStart="8dp"
+        android:onClick="getPatternOnMap"
         android:text="@string/get_pattern"
-        android:onClick="getPattern"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.676"
-        app:layout_constraintStart_toEndOf="@+id/numberPicker" />
+        app:layout_constraintStart_toEndOf="@+id/etMinutesLand" />
 
     <Button
+        android:background="@drawable/background"
         android:id="@+id/buStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,6 +53,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
+        android:background="@drawable/background"
         android:id="@+id/buStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -75,4 +66,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toEndOf="@+id/buGetPolylineOnMap" />
+
+    <EditText
+        android:id="@+id/etMinutesLand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="Enter number of minutes to localize your phone"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

@@ -116,7 +116,7 @@ class LocationService : IntentService("LocationBackground") {
     companion object {
         val TAG = "LocationTrackingService"
 
-        val INTERVAL = 5000.toLong() // In milliseconds
+        val INTERVAL = 1500.toLong() // In milliseconds
         val DISTANCE = 1F // In meters
         var isServiceRunning = false
         val locationListeners = arrayOf(
