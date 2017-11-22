@@ -19,6 +19,7 @@ import pl.kotliners.locationservice.Model.LocationModel
  */
 
 class LocationService : IntentService("LocationBackground") {
+
     private var locationManager: LocationManager? = null
     private var lastLocation: Location? = null
     private val handler: android.os.Handler = android.os.Handler()
@@ -68,12 +69,9 @@ class LocationService : IntentService("LocationBackground") {
         when (locationManager) {
             null -> locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         }
-        while (isServiceRunning) {
-            if (!isServiceRunning) {
-                Log.i(TAG, "stopSelf() called")
-                stopSelf()
-                return
-            }
+
+        var count = 0
+        while (count < 10) {
             handler.post {
                 try {
                     Thread.sleep(INTERVAL)
@@ -105,8 +103,8 @@ class LocationService : IntentService("LocationBackground") {
                 if (lastLocation != null) {
                     myRef.child(lastLocation!!.time.toString()).setValue(LocationModel(lastLocation!!))
                 }
-
             }
+            count++
         }
     }
 
@@ -118,7 +116,7 @@ class LocationService : IntentService("LocationBackground") {
     companion object {
         val TAG = "LocationTrackingService"
 
-        var INTERVAL = 5000.toLong() // In milliseconds
+        val INTERVAL = 5000.toLong() // In milliseconds
         val DISTANCE = 1F // In meters
         var isServiceRunning = false
         val locationListeners = arrayOf(

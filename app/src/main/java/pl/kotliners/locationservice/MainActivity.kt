@@ -1,5 +1,6 @@
 package pl.kotliners.locationservice
 
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -15,16 +16,24 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
 import pl.kotliners.locationservice.Service.LocationService
+import pl.kotliners.locationservice.Service.StartService
+import pl.kotliners.locationservice.Util.Utils
 
 class MainActivity : AppCompatActivity() {
 
-    private var ACCESSLOCATION = 1
     private var onAccessLocation = false
-    lateinit var mAuth: FirebaseAuth
-    lateinit var pref: SharedPreferences
-    lateinit var editor: SharedPreferences.Editor
-    lateinit var tokenSaved: String
-    lateinit var myIntent: Intent
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var pref: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
+    private lateinit var tokenSaved: String
+    private lateinit var myIntent: Intent
+    private lateinit var pendingIntent:PendingIntent
+    //private lateinit var alarmManager:AlarmManager
+
+    private lateinit var alarmService:StartService
+
+    private val accessLocation = 1
+    private val calendar = java.util.Calendar.getInstance()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,21 +43,28 @@ class MainActivity : AppCompatActivity() {
         pref = PreferenceManager.getDefaultSharedPreferences(this)
         editor = pref.edit()
         mAuth = FirebaseAuth.getInstance()
-        myIntent = Intent(baseContext, LocationService::class.java)
+        myIntent = Intent(this, LocationService::class.java)
+        //alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmService = StartService()
         checkUserLogIn()
         checkPermission()
+        alarmSet()
+    }
+
+    private fun alarmSet() {
+        pendingIntent = PendingIntent.getBroadcast(this, 0, myIntent, 0)
     }
 
     override fun onStart() {
         super.onStart()
         if (onAccessLocation) {
-            startLocationService()
+            startLocation()
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
-            ACCESSLOCATION -> {
+            accessLocation -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     onAccessLocation = true
                 } else {
@@ -60,19 +76,17 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    fun startLocationService(view: View) {
+    fun buStartLocation(view: View) {
         if (!LocationService.isServiceRunning) {
-            myIntent.putExtra("TOKEN", tokenSaved)
-            LocationService.isServiceRunning = true
-            startService(myIntent)
+            startLocation()
         } else {
             Toast.makeText(this, "Service already running", Toast.LENGTH_LONG).show()
         }
     }
 
-    fun stopLocationService(view: View) {
+    fun buStopLocation(view: View) {
         LocationService.isServiceRunning = false
-        stopService(myIntent)
+        alarmService.stop(applicationContext)
     }
 
     fun getPattern(view: View) {
@@ -82,7 +96,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkUserLogIn() {
         Log.i("TOKEN", "${pref.all["TOKEN"]}")
-        Log.i("mAuth", "${mAuth.currentUser}")
         Log.i("mAuthUID", "${mAuth.currentUser?.uid}")
 
         tokenSaved = pref.all["TOKEN"].toString()
@@ -106,9 +119,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startLocationService() {
+    private fun startLocation() {
         LocationService.isServiceRunning = true
-        startService(myIntent)
+        val period = Utils.minutesToMiliSeconds(1)
+        alarmService.start(applicationContext)
+        //alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, calendar.timeInMillis, period, pendingIntent)
+       // Log.i("ALARM MANAGER", alarmManager.toString())
     }
 
     private fun checkPermission() {
@@ -117,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                     checkSelfPermission(this,
                             android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), ACCESSLOCATION)
+                requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), accessLocation)
                 return
             }
         }

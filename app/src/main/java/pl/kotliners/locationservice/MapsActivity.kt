@@ -20,7 +20,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private val points = ArrayList<LatLng>()
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var databaseReference: DatabaseReference
+    private var databaseReference: DatabaseReference? = null
     private var isMapReady = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +49,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         .map { it.getValue<LocationModel>(LocationModel::class.java) }
                         .mapNotNullTo(toReturn) { messageData -> messageData?.let { it } }
 
-                toReturn.sortBy { message ->
+               /* toReturn.sortBy { message ->
                     message.time
-                }
+                }*/
                 setupLocationAdapter(toReturn)
             }
 
@@ -59,13 +59,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.d("Firebase error", databaseError.message)
             }
         }
-        databaseReference.child("${mAuth.currentUser?.uid}")?.addValueEventListener(locationListener)
+        databaseReference?.child("${mAuth.currentUser?.uid}")?.addValueEventListener(locationListener)
     }
 
     private fun setupLocationAdapter(listOfLocation: ArrayList<LocationModel>) {
         points.clear()
         (0 until listOfLocation.size).mapTo(points) { LatLng(listOfLocation[it].latitude.toDouble(), listOfLocation[it].longitude.toDouble()) }
-        if (isMapReady) {
+        Log.i("POINTS", points.isNotEmpty().toString())
+        if (isMapReady  && points.isNotEmpty()) {
             mMap.clear()
 
             mMap.addPolyline(PolylineOptions()
@@ -79,8 +80,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun initFirebase() {
         FirebaseApp.initializeApp(applicationContext)
-        FirebaseDatabase.getInstance().setLogLevel(Logger.Level.DEBUG)
-        databaseReference = FirebaseDatabase.getInstance().reference
-        mAuth = FirebaseAuth.getInstance()
+
+        if (databaseReference == null) {
+            FirebaseDatabase.getInstance()
+            databaseReference = FirebaseDatabase.getInstance().reference
+            mAuth = FirebaseAuth.getInstance()
+        }
     }
 }
