@@ -48,10 +48,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 dataSnapshot.children
                         .map { it.getValue<LocationModel>(LocationModel::class.java) }
                         .mapNotNullTo(toReturn) { messageData -> messageData?.let { it } }
-
-               /* toReturn.sortBy { message ->
-                    message.time
-                }*/
+                
                 setupLocationAdapter(toReturn)
             }
 
