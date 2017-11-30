@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
@@ -19,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import pl.kotliners.locationservice.Service.LocationService
 import pl.kotliners.locationservice.Service.StartService
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var onAccessLocation = false
     private lateinit var mAuth: FirebaseAuth
@@ -31,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var alarmService:StartService
 
     private val accessLocation = 1
-    val ten_minutes = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,30 +56,6 @@ class MainActivity : AppCompatActivity() {
         alarmService.start(applicationContext, interval)
     }
 
-    private fun getMinutes(): Int{
-        var min = ten_minutes
-        if( etMinutesLand == null ){
-            try {
-                min = etMinutes?.text.toString().toInt()
-            } catch (e: Exception) {
-                etMinutes?.error = "Set valid value between 1 minute to 1440 minutes (24h)"
-            } finally {
-                Toast.makeText(this, "Interval changed", Toast.LENGTH_LONG).show()
-                etMinutes?.clearComposingText()
-            }
-        } else {
-            try {
-                min = etMinutesLand?.text.toString().toInt()
-            } catch (e: Exception) {
-                etMinutes?.error = "Set valid value between 1 minute to 1440 minutes (24h)"
-            } finally {
-                Toast.makeText(this, "Interval changed", Toast.LENGTH_LONG).show()
-                etMinutesLand?.clearComposingText()
-            }
-        }
-        return min
-    }
-
     fun buStartLocation(view: View) {
         if (!LocationService.isServiceRunning) {
             startLocation()
@@ -91,11 +67,6 @@ class MainActivity : AppCompatActivity() {
     fun buStopLocation(view: View) {
         LocationService.isServiceRunning = false
         alarmService.stop(applicationContext)
-    }
-
-    fun getPatternOnMap(view: View) {
-        val intent = Intent(this, MapsActivity::class.java)
-        startActivity(intent)
     }
 
     private fun initApp() {
