@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Where was I</string>
-    <string name="change_sheduled_time">Change scheduled time</string>
-    <string name="get_pattern">Get polyline on map</string>
-    <string name="location_service">Location Service</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="location">This app provides a system location in background. You can change it in any time, just click on switch button. Also you can change interval of time when the service is trying to find your location.</string>
+    <string name="time">Current time is: </string>
 </resources>

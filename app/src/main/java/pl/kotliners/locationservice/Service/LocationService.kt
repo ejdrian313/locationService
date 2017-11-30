@@ -70,41 +70,37 @@ class LocationService : IntentService("LocationBackground") {
             null -> locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         }
 
-        var count = 0
-        while (count < 10) {
-            handler.post {
-                try {
-                    Thread.sleep(INTERVAL)
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
+        handler.post {
+            try {
+                Thread.sleep(INTERVAL)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
 
-                if (locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    try {
-                        locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL, DISTANCE, locationListeners[0])
-                    } catch (e: SecurityException) {
-                        Log.e(TAG, "Fail to request location update", e)
-                    } catch (e: IllegalArgumentException) {
-                        Log.e(TAG, "GPS provider does not exist", e)
-                    } finally {
-                        lastLocation = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                    }
-                } else {
-                    try {
-                        locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL, DISTANCE, locationListeners[1])
-                    } catch (e: SecurityException) {
-                        Log.e(TAG, "Fail to request location update", e)
-                    } catch (e: IllegalArgumentException) {
-                        Log.e(TAG, "Network provider does not exist", e)
-                    } finally {
-                        lastLocation = locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-                    }
+            if (locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                try {
+                    locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL, DISTANCE, locationListeners[0])
+                } catch (e: SecurityException) {
+                    Log.e(TAG, "Fail to request location update", e)
+                } catch (e: IllegalArgumentException) {
+                    Log.e(TAG, "GPS provider does not exist", e)
+                } finally {
+                    lastLocation = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 }
-                if (lastLocation != null) {
-                    myRef.child(lastLocation!!.time.toString()).setValue(LocationModel(lastLocation!!))
+            } else {
+                try {
+                    locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL, DISTANCE, locationListeners[1])
+                } catch (e: SecurityException) {
+                    Log.e(TAG, "Fail to request location update", e)
+                } catch (e: IllegalArgumentException) {
+                    Log.e(TAG, "Network provider does not exist", e)
+                } finally {
+                    lastLocation = locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                 }
             }
-            count++
+            if (lastLocation != null) {
+                myRef.child(lastLocation!!.time.toString()).setValue(LocationModel(lastLocation!!))
+            }
         }
     }
 
