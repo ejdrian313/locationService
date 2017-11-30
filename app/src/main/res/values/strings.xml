@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Where was I</string>
     <string name="location">This app provides a system location in background. You can change it in any time, just click on switch button. Also you can change interval of time when the service is trying to find your location.</string>
-    <string name="time">Current time is: </string>
+    <string name="time">Current time is (in minutes): </string>
 </resources>
